@@ -1,13 +1,13 @@
 package syst17796.object_classes.standard;
 
-public enum Rank {
+public enum Rank { // stores the standard card ranks as an enum
     ACE, TWO, THREE, FOUR,
     FIVE, SIX, SEVEN, EIGHT,
     NINE, TEN, JACK, QUEEN,
     KING;
 
     @Override
-    public String toString() {
+    public String toString() { // provides ranks in a more readable format than in all caps
         switch (this) {
             case ACE:
                 return "Ace";
