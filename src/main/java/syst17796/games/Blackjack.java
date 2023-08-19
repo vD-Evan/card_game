@@ -2,17 +2,14 @@ package syst17796.games;
 
 import java.util.ArrayList;
 
-import syst17796.abstract_classes.GameRequirements;
-import syst17796.games.libraries.blackjack.Check;
-import syst17796.games.libraries.blackjack.Display;
-import syst17796.games.libraries.blackjack.Scores;
-import syst17796.games.libraries.blackjack.Sort;
+import syst17796.abstract_classes.GameRequirements; // requires the requirements for a game
+import syst17796.games.libraries.blackjack.*; // game library of extra classes/methods
 import syst17796.object_classes.standard.Card;
 import syst17796.object_classes.standard.Deck;
 import syst17796.object_classes.standard.Player;
 import syst17796.utility.UserInput;
 
-public class Blackjack extends GameRequirements<Player, Card, Deck> {
+public class Blackjack extends GameRequirements<Player, Card, Deck> { // uses standard player, card, deck
     Deck theDeck;
     ArrayList<Player> players;
     boolean blackjackWin;
@@ -20,38 +17,46 @@ public class Blackjack extends GameRequirements<Player, Card, Deck> {
 
     @Override
     public void newGame(ArrayList<String> playerNames) {
-        players = new ArrayList<>();
         get.aClearScreen();
+
+        // imports player names and creates a player for each name
+        players = new ArrayList<>();
         for (String name : playerNames) {
             Player player = new Player(name);
             players.add(player);
             System.out.println("Added " + player.getName() + " to the game.");
         }
         System.out.println("");
-        setupGame();
+        setupGame(); // sets the game up, runs game from within set up
     }
 
-    protected void setupGame() {
+    protected void setupGame() { // sets up the game
+
+        // instructions with option to view
         System.out.println("Would you like to view the instructions? [Yes]/[No]");
         boolean choice = get.aBoolean("Yes", "No");
-
         if (choice) {
             instructions();
         }
         get.aClearScreen();
 
+        // (re)sets the deck
         if (theDeck == null) {
             System.out.println("Compiling a new deck for the game.");
         } else {
             System.out.println("Resetting the deck for a new game.");
         }
+        theDeck = new Deck();
+        System.out.println("Shuffling the deck.");
+        theDeck.shuffle();
+
+        // clears all players' hand and marks player as active
         for (Player player : players) {
             player.clearHand();
             player.setMiscString1("[Active]");
         }
-        theDeck = new Deck();
-        System.out.println("Shuffling the deck.");
-        theDeck.shuffle();
+
+        // preliminary deal
         System.out.printf("%nDealing first card.%n");
         for (Player player : players) {
             player.addCardToHand(theDeck.dealCard());
@@ -61,11 +66,13 @@ public class Blackjack extends GameRequirements<Player, Card, Deck> {
             player.addCardToHand(theDeck.dealCard());
         }
 
+        // wishes players good luck, waits, then runs the game
         System.out.printf("%nGood Luck!%n");
         get.aWait();
         runGame();
     }
 
+    // instructions for the game
     @Override
     protected void instructions() {
         get.aClearScreen();
@@ -73,7 +80,8 @@ public class Blackjack extends GameRequirements<Player, Card, Deck> {
                 "Welcome to the game of Blackjack!",
                 "Goal:",
                 "To have the combined value of cards as close to, or matching, without exceeding 21.");
-        get.aWait();
+        get.aWait(); // waits for above output to allow for player to read
+                     // without presenting too much information at once
 
         System.out.printf("%s%n%s%n%s%n%s%n%s%n",
                 "Instructions:",
@@ -133,28 +141,32 @@ public class Blackjack extends GameRequirements<Player, Card, Deck> {
         boolean playAgain = false;
 
         do {
-            if (Check.initialWin(players) != null) {
+            if (Check.initialWin(players) != null) { // checks for initial win (ie. Black Jack)
                 get.aClearScreen();
                 System.out.println("Blackjack!");
                 Player luckyWinner = Check.initialWin(players);
                 System.out.println(luckyWinner.getName() + " was dealt a winning hand!");
                 System.out.printf("%n%nSee below for the scores:%n");
-            } else {
 
-                boolean gameEnd = false;
+            } else { // otherwise, no one was lucky, standard game resumes
+
+                boolean gameEnd = false; // marks game as active
                 do {
-                    for (int i = 0; i < players.size(); i++) {
+                    for (int i = 0; i < players.size(); i++) { // cycles through players
                         Player player = players.get(i);
-                        if (player.getMiscString1().equals("[Active]")) {
+                        if (player.getMiscString1().equals("[Active]")) { // if currentplayer is [Active], provide turn
                             playerTurn(player);
-                            gameEnd = Check.forFinish(players);
+                            gameEnd = Check.forFinish(players); // check for game end at the end of each player's turn
                             if (!gameEnd) {
-                                Player nextPlayer = Check.nextActive(player, players);
+                                Player nextPlayer = Check.nextActive(player, players); // determines the next [active]
+                                                                                       // player
                                 get.aClearScreen();
-                                Display.nextActive(nextPlayer);
-                                get.aWait();
+                                Display.nextActive(nextPlayer); // prompts player to pass device to next player
+                                get.aWait(); // clear screen and waits used to prevent players from seeing other
+                                             // player's score
                             } else {
-                                get.aClearScreen();
+                                get.aClearScreen(); // otherwise, game has ended, informs players and breaks from for
+                                                    // loop
                                 System.out.println("All players have elected to [Stand] or have [Bust].");
                                 System.out.println("See below for the scores:");
                                 break;
@@ -163,35 +175,41 @@ public class Blackjack extends GameRequirements<Player, Card, Deck> {
                     }
                 } while (!gameEnd);
             }
-            endGame();
+            endGame(); // game has ended, run endgame logic
+
+            // asks users to play again
             System.out.println("Do you want to play again? [Yes]/[No]");
             System.out.print("> ");
             playAgain = get.aBoolean("Yes", "No");
-            if (playAgain) {
+            if (playAgain) { // if so, rerun setup to launch a new game
                 get.aClearScreen();
                 setupGame();
             }
-        } while (playAgain);
-
+        } while (playAgain); // loops while players want to play again
     }
 
+    // flow of player's turn
     @Override
     protected void playerTurn(Player player) {
         get.aClearScreen();
-        Display.table(player, players);
-        boolean choice = get.aBoolean("1", "2");
+        Display.table(player, players); // displays the table
+        boolean choice = get.aBoolean("1", "2"); // asks user to hit or stand
 
-        if (!choice) {
+        if (!choice) { // marks the user as stand, ends the turn
             player.setMiscString1("[Stand]");
             System.out.println("You have elected to [Stand]");
-        } else {
+
+        } else { // otherwise player requests a new card (Hit), adds a new card to hand
             Card newCard = theDeck.dealCard();
             player.addCardToHand(newCard);
             System.out.println("New Card: " + newCard);
 
+            // recalculates score and displays it
             int newScore = Scores.handValue(player, true);
             System.out.println("Your new score is: " + newScore);
 
+            // bust logic; if a player's score exceeds 21, mark player as bust, display a
+            // (hopefully fun) message
             if (newScore > 21) {
                 player.setMiscString1("[Bust]");
                 System.out.println("Like Icarus, you've flown too close to the sun. Sorry, but you've Bust!");
@@ -200,14 +218,20 @@ public class Blackjack extends GameRequirements<Player, Card, Deck> {
         get.aWait();
     }
 
+    // end game logic
     @Override
     protected void endGame() {
-        Sort.byHighCard(players);
-        Sort.byHandSize(players);
-        Sort.byHandValue(players);
+        Sort.byHighCard(players); // first sorts players based on their highest card
+        Sort.byHandSize(players); // overwrites this sort by hand size
+        Sort.byHandValue(players);// overwrites this sort by hand value
+        // this leaves a sort of: hand value, hand size, highest card value
 
+        // separates players into two lists: bust and stand players
         ArrayList<Player> bustPlayer = new ArrayList<>();
         ArrayList<Player> standPlayer = new ArrayList<>();
+
+        // add player to bust list if score exceeds 21, add player to stand list if
+        // score is not bust
         for (Player player : players) {
             int score = Scores.handValue(player, true);
             if (score > 21) {
@@ -217,6 +241,7 @@ public class Blackjack extends GameRequirements<Player, Card, Deck> {
             }
         }
 
+        // displays the winning hands in order if applicable
         if (standPlayer.size() > 0) {
             System.out.println("Winning Hands:");
             for (int i = 0; i < standPlayer.size(); i++) {
@@ -227,14 +252,19 @@ public class Blackjack extends GameRequirements<Player, Card, Deck> {
                     int k = i + 1;
                     System.out.print("#" + k + ": ");
                 }
-                System.out.println(Display.playerStats(player));
+                System.out.println(Display.playerStats(player)); // adds the player's stats
             }
-            System.out.printf("%n%s%n%n",
-                    "--------------------");
-        } else {
+
+            // prints a separating line if there are winning hands and bust hands
+            if (bustPlayer.size() > 0) {
+                System.out.printf("%n%s%n%n",
+                        "--------------------");
+            }
+        } else { // displays if there are no winning hands
             System.out.printf("Sorry, all players have Bust!%n%n");
         }
 
+        // displays players that have bust
         if (bustPlayer.size() > 0) {
             System.out.println("Bust Hands:");
             for (Player player : bustPlayer) {
