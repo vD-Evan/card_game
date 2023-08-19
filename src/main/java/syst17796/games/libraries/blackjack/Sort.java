@@ -5,8 +5,9 @@ import java.util.ArrayList;
 import syst17796.object_classes.standard.Card;
 import syst17796.object_classes.standard.Player;
 
-public class Sort {
-    public static void byHighCard(ArrayList<Player> players) {
+public class Sort { // handles the end game sorting using simple bubble sorts (rather than built-in
+                    // collection methods)
+    public static void byHighCard(ArrayList<Player> players) { // sorts based on highest card in hand
         int comparedPlayers = players.size() - 1;
 
         // Outer loop for iterations
@@ -59,7 +60,7 @@ public class Sort {
         }
     }
 
-    public static void byHandSize(ArrayList<Player> players) {
+    public static void byHandSize(ArrayList<Player> players) { // sorts by hand size
         int comparedPlayers = players.size() - 1;
 
         // Outer loop for iterations
@@ -81,7 +82,7 @@ public class Sort {
         }
     }
 
-    public static void byHandValue(ArrayList<Player> players) {
+    public static void byHandValue(ArrayList<Player> players) { // sorts by hand value
         int comparedPlayers = players.size() - 1;
 
         // Outer loop for iterations
@@ -103,7 +104,7 @@ public class Sort {
         }
     }
 
-    private static void sortHand(ArrayList<Card> hand) {
+    private static void sortHand(ArrayList<Card> hand) { // for use in sort by highcard
         int size = hand.size();
         for (int k = 0; k < size - 1; k++) {
             for (int m = 0; m < size - k - 1; m++) {
@@ -114,13 +115,13 @@ public class Sort {
         }
     }
 
-    private static void swapCard(ArrayList<Card> hand, int index1, int index2) {
+    private static void swapCard(ArrayList<Card> hand, int index1, int index2) { // swaps the cards compared
         Card tempCard = hand.get(index2);
         hand.set(index2, hand.get(index1));
         hand.set(index1, tempCard);
     }
 
-    private static void swapPlayer(ArrayList<Player> players, int index1, int index2) {
+    private static void swapPlayer(ArrayList<Player> players, int index1, int index2) { // swaps the players compared
         Player tempPlayer = players.get(index2);
         players.set(index2, players.get(index1));
         players.set(index1, tempPlayer);

@@ -1,13 +1,9 @@
 package syst17796;
 
-/**
- * Hello world!
- *
- */
 public class App {
-    public static void main(String[] args) {
+    public static void main(String[] args) { // runs on program run
 
-        MainMenu begin = new MainMenu();
-        begin.runMainMenu();
+        MainMenu begin = new MainMenu(); // constructs the main menu
+        begin.runMainMenu(); // runs main menu
     }
 }

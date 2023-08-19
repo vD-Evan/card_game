@@ -2,13 +2,20 @@ package syst17796.abstract_classes;
 
 import java.util.ArrayList;
 
-public abstract class PlayerRequirements<T> {
+public abstract class PlayerRequirements<T> { // requirements for future player classes
+    /*
+     * Note:
+     * - Generic type <T> allows for non-standard versions of Card to be used
+     * - Assumes every player has a name, a hand with cards, and a score;
+     * - extra variables present if required by the specific game
+     */
     protected String name;
     protected ArrayList<T> hand;
     protected int score;
     protected int miscInteger1, miscInteger2, miscInteger3;
     protected String miscString1, miscString2, miscString3;
 
+    // constructor: each player has a name, gives a new player an empty hand
     public PlayerRequirements(String name) {
         this.name = name;
         this.hand = new ArrayList<T>();
@@ -16,7 +23,7 @@ public abstract class PlayerRequirements<T> {
 
     public String getName() {
         return name;
-    }
+    } // set name handled by constructor
 
     public ArrayList<T> getHand() {
         return hand;
@@ -30,14 +37,17 @@ public abstract class PlayerRequirements<T> {
         return hand.size();
     }
 
+    // equivalent of setHand to add a card
     public void addCardToHand(T card) {
         hand.add(card);
     }
 
+    // equivalent of setHand to remove a card
     public void removeCardFromHand(T card) {
         hand.remove(card);
     }
 
+    // equivalent of setHand to clear the hand
     public void clearHand() {
         this.hand = new ArrayList<T>();
     }
@@ -46,9 +56,11 @@ public abstract class PlayerRequirements<T> {
         this.score = score;
     }
 
+    // assumes a player can play a card, implementation to change based on specific
+    // use case
     public abstract void playCard(T card);
 
-    // misc variables:
+    // misc variables get/set methods:
     public int getMiscInteger1() {
         return miscInteger1;
     }
